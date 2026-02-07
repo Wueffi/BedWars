@@ -29,7 +29,7 @@ public class checkWins {
 
                 for (Team team : lobby.getTeamList()) {
                     int teamAliveCount = 0;
-                    if (team.getAlivePlayers() > 0 && bedChecker.getBedStatus().getOrDefault(team.getColor(), false)) {
+                    if (team.getAlivePlayers() > 0 || bedChecker.getBedStatus().getOrDefault(team.getColor(), false)) {
                         teamAliveCount++;
                     }
 
