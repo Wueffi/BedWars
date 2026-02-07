@@ -28,7 +28,7 @@ public class ShopListener implements Listener {
     private static Map<UUID, ShopKeeper.DyeColor> villagerColors = new HashMap<>();
     private static List<UUID> teamShops = new ArrayList<>();
 
-    private static Map<Team, Integer> currentSharpnessLevel = new HashMap<>();
+    static Map<Team, Integer> currentSharpnessLevel = new HashMap<>();
     private static Map<Team, Integer> currentProtectionLevel = new HashMap<>();
     private static Map<Team, Integer> currentForgeLevel = new HashMap<>();
 
@@ -47,10 +47,7 @@ public class ShopListener implements Listener {
     public void onInteract(PlayerInteractEntityEvent event) {
         if (!(event.getRightClicked() instanceof Villager villager)) return;
 
-        plugin.getLogger().info("right click");
-
         if (!villagerColors.containsKey(villager.getUniqueId())) {
-            plugin.getLogger().info("wrong uuid");
             return;
         }
         event.setCancelled(true);
@@ -61,11 +58,11 @@ public class ShopListener implements Listener {
         Inventory shop;
 
         if (teamShops.contains(villager.getUniqueId())) {
-            shop = Bukkit.createInventory(null, 36, color.chatColor() + "Shop");
+            shop = Bukkit.createInventory(null, 36, color.chatColor() + "General Shop");
             populateShop(shop, color, player);
             shopInventories.put(player.getUniqueId(), shop);
         } else {
-            shop = Bukkit.createInventory(null, 27, color.chatColor() + "Team Shop");
+            shop = Bukkit.createInventory(null, 27, color.chatColor() + "Upgrade Shop");
             populateTeamShop(shop, player);
             shopInventories.put(player.getUniqueId(), shop);
         }
@@ -114,15 +111,42 @@ public class ShopListener implements Listener {
             return;
         }
 
+        player.sendMessage(title);
+
         switch (title) {
-            case "§bProtection 1" -> updateProtection(team, 1);
-            case "§bProtection 2" -> updateProtection(team, 2);
-            case "§bProtection 3" -> updateProtection(team, 3);
-            case "§bProtection 4" -> updateProtection(team, 4);
-            case "§bBase Generator Level 2" -> currentForgeLevel.put(team, 2);
-            case "§bBase Generator Level 3" -> currentForgeLevel.put(team, 3);
-            case "§bBase Generator Level 4" -> currentForgeLevel.put(team, 4);
-            case "§bSharpness 1" -> applySharpness(team);
+            case "§bProtection 1" -> {
+                player.closeInventory();
+                updateProtection(team, 1);
+            }
+            case "§bProtection 2" -> {
+                player.closeInventory();
+                updateProtection(team, 2);
+            }
+            case "§bProtection 3" -> {
+                player.closeInventory();
+                updateProtection(team, 3);
+            }
+            case "§bProtection 4" -> {
+                player.closeInventory();
+                updateProtection(team, 4);
+            }
+            case "§bBase Generator Level 2" -> {
+                player.closeInventory();
+                currentForgeLevel.put(team, 2);
+            }
+            case "§bBase Generator Level 3" -> {
+                player.closeInventory();
+                currentForgeLevel.put(team, 3);
+            }
+            case "§bBase Generator Level 4" -> {
+                player.closeInventory();
+                currentForgeLevel.put(team, 4);
+            }
+            case "§bSharpness 1" -> {
+                player.closeInventory();
+                applySharpness(team);
+            }
+
             case "§aAlready bought!" -> {
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
                 return;
@@ -132,28 +156,40 @@ public class ShopListener implements Listener {
                 item.setLore(Collections.singletonList(""));
 
                 if (item.equals(ItemStack.of(Material.CHAINMAIL_CHESTPLATE))) {
-                    ItemStack helmet = new ItemStack(Material.CHAINMAIL_HELMET);
-                    helmet.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    ItemStack helmet = player.getInventory().getHelmet();
+                    if (currentProtectionLevel.get(team) > 0) {
+                        helmet.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    }
                     player.getInventory().setHelmet(helmet);
 
                     ItemStack chestplate = new ItemStack(Material.CHAINMAIL_CHESTPLATE);
-                    chestplate.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    if (currentProtectionLevel.get(team) > 0) {
+                        chestplate.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    }
                     player.getInventory().setHelmet(chestplate);
                 } else if (item.equals(ItemStack.of(Material.IRON_CHESTPLATE))) {
                     ItemStack helmet = new ItemStack(Material.IRON_HELMET);
-                    helmet.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    if (currentProtectionLevel.get(team) > 0) {
+                        helmet.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    }
                     player.getInventory().setHelmet(helmet);
 
                     ItemStack chestplate = new ItemStack(Material.IRON_CHESTPLATE);
-                    chestplate.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    if (currentProtectionLevel.get(team) > 0) {
+                        chestplate.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    }
                     player.getInventory().setHelmet(chestplate);
                 } else if (item.equals(ItemStack.of(Material.DIAMOND_CHESTPLATE))) {
                     ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET);
-                    helmet.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    if (currentProtectionLevel.get(team) > 0) {
+                        helmet.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    }
                     player.getInventory().setHelmet(helmet);
 
                     ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
-                    chestplate.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    if (currentProtectionLevel.get(team) > 0) {
+                        chestplate.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    }
                     player.getInventory().setHelmet(chestplate);
                 } else {
                     player.getInventory().addItem(item);
@@ -192,21 +228,21 @@ public class ShopListener implements Listener {
         ItemStack chainArmor = new ItemStack(Material.CHAINMAIL_CHESTPLATE, 1);
         chainArmor.setItemMeta(createItemMeta(chainArmor, "§7Chainmail Armor", "Cost: 40 Iron"));
         if (currentProtectionLevel.get(team) > 0) {
-            chainArmor.addEnchantment(Enchantment.PROTECTION, currentSharpnessLevel.get(team));
+            chainArmor.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
         }
         shop.setItem(5, chainArmor);
 
         ItemStack ironArmor = new ItemStack(Material.IRON_CHESTPLATE, 1);
         ironArmor.setItemMeta(createItemMeta(ironArmor, "§6Iron Armor", "Cost: 12 Gold"));
         if (currentProtectionLevel.get(team) > 0) {
-            ironArmor.addEnchantment(Enchantment.PROTECTION, currentSharpnessLevel.get(team));
+            ironArmor.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
         }
         shop.setItem(6, ironArmor);
 
         ItemStack diaArmor = new ItemStack(Material.DIAMOND_CHESTPLATE, 1);
         diaArmor.setItemMeta(createItemMeta(diaArmor, "§2Diamond Armor", "Cost: 6 Emerald"));
         if (currentProtectionLevel.get(team) > 0) {
-            diaArmor.addEnchantment(Enchantment.PROTECTION, currentSharpnessLevel.get(team));
+            diaArmor.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
         }
         shop.setItem(7, diaArmor);
 
@@ -392,6 +428,8 @@ public class ShopListener implements Listener {
     }
 
     private void updateProtection(Team team, int level) {
+        currentProtectionLevel.remove(team);
+        currentProtectionLevel.put(team, level);
         for (Player player1 : team.getPlayers()) {
             ItemStack helmet = player1.getInventory().getHelmet();
             assert helmet != null;
@@ -404,6 +442,8 @@ public class ShopListener implements Listener {
     }
 
     private void applySharpness(Team team) {
+        currentSharpnessLevel.remove(team);
+        currentSharpnessLevel.put(team, 1);
         for (Player player : team.getPlayers()) {
             for (ItemStack item : player.getInventory().getContents()) {
                 if (item == null) {
@@ -424,7 +464,7 @@ public class ShopListener implements Listener {
         return currentForgeLevel.get(team);
     }
 
-    void setUpTeamLevels(Team team) {
+    public static void setUpTeamLevels(Team team) {
         currentForgeLevel.put(team, 1);
         currentProtectionLevel.put(team, 0);
         currentSharpnessLevel.put(team, 0);

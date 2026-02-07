@@ -20,10 +20,12 @@ public class ShopKeeper {
         this.lobby = lobby;
     }
 
-    public static Villager spawnShopKeeper(Location loc, DyeColor color, World world, float yaw) {
+    public static Villager spawnShopKeeper(Location loc, DyeColor color, World world, float yaw, boolean teamShop) {
         loc.setYaw(yaw);
         Villager villager = (Villager) world.spawnEntity(loc, EntityType.VILLAGER);
-        villager.setCustomName(color.chatColor() + "Team " + color.name().charAt(0) + color.name().substring(1).toLowerCase() + " Shop");
+        String color2 = color.name().substring(1).toLowerCase();
+        if (teamShop) villager.setCustomName(color.chatColor() + "Team " + color.name().charAt(0) + color2 + " Shop");
+        else villager.setCustomName(color.chatColor() + "Team " + color.name().charAt(0) + color2 + " Upgrades");
         villager.setCustomNameVisible(true);
         villager.setInvulnerable(true);
         villager.setAI(false);

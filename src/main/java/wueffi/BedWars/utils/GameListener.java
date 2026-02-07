@@ -47,24 +47,26 @@ public class GameListener implements Listener {
 
             Generators generators = new Generators(plugin, lobby, shopListener);
 
-            Bukkit.getPluginManager().registerEvents(new SpecialItemsListener(), plugin);
+            SpecialItemsListener sListener = new SpecialItemsListener(plugin);
+
+            Bukkit.getPluginManager().registerEvents(sListener, plugin);
 
             World world = Bukkit.getWorld(lobby.getWorldFolder().getName());
 
-            Villager redShop = ShopKeeper.spawnShopKeeper(new Location(world, -5.5, 66, 80), ShopKeeper.DyeColor.RED, world, 270);
-            Villager blueShop = ShopKeeper.spawnShopKeeper(new Location(world, 79, 66, 5.5), ShopKeeper.DyeColor.BLUE, world, 0);
-            Villager yellowShop = ShopKeeper.spawnShopKeeper(new Location(world, 6.5, 66, -79), ShopKeeper.DyeColor.YELLOW, world, 90);
-            Villager greenShop = ShopKeeper.spawnShopKeeper(new Location(world, 80, 66, 6.5), ShopKeeper.DyeColor.GREEN, world, 180);
+            Villager redShop = ShopKeeper.spawnShopKeeper(new Location(world, -5.5, 66, 80), ShopKeeper.DyeColor.RED, world, 270, false);
+            Villager blueShop = ShopKeeper.spawnShopKeeper(new Location(world, -79, 66, -5.5), ShopKeeper.DyeColor.BLUE, world, 0, false);
+            Villager yellowShop = ShopKeeper.spawnShopKeeper(new Location(world, 6.5, 66, -79), ShopKeeper.DyeColor.YELLOW, world, 90, false);
+            Villager greenShop = ShopKeeper.spawnShopKeeper(new Location(world, 80, 66, 6.5), ShopKeeper.DyeColor.GREEN, world, 180, false);
 
             shopListener.registerShopKeeper(redShop, ShopKeeper.DyeColor.RED, false);
             shopListener.registerShopKeeper(blueShop, ShopKeeper.DyeColor.BLUE, false);
             shopListener.registerShopKeeper(yellowShop, ShopKeeper.DyeColor.YELLOW, false);
             shopListener.registerShopKeeper(greenShop, ShopKeeper.DyeColor.GREEN, false);
 
-            Villager redTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, 6.5, 66, 80), ShopKeeper.DyeColor.RED, world, 90);
-            Villager blueTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, -79, 66, 6.5), ShopKeeper.DyeColor.BLUE, world, 180);
-            Villager yellowTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, 5.5, 66, -79), ShopKeeper.DyeColor.YELLOW, world, 270);
-            Villager greenTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, 80, 66, -5.5), ShopKeeper.DyeColor.GREEN, world, 0);
+            Villager redTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, 6.5, 66, 80), ShopKeeper.DyeColor.RED, world, 90, true);
+            Villager blueTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, -79, 66, 6.5), ShopKeeper.DyeColor.BLUE, world, 180, true);
+            Villager yellowTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, -5.5, 66, -79), ShopKeeper.DyeColor.YELLOW, world, 270, true);
+            Villager greenTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, 80, 66, -5.5), ShopKeeper.DyeColor.GREEN, world, 0, true);
 
             shopListener.registerShopKeeper(redTeamShop, ShopKeeper.DyeColor.RED, true);
             shopListener.registerShopKeeper(blueTeamShop, ShopKeeper.DyeColor.BLUE, true);
@@ -103,7 +105,7 @@ public class GameListener implements Listener {
                     player.getInventory().setBoots(boots);
                 }
                 for (Team team : lobby.getTeamList()) {
-                    shopListener.setUpTeamLevels(team);
+                    ShopListener.setUpTeamLevels(team);
                 }
                 generators.startGenerators();
             }, 201L);
