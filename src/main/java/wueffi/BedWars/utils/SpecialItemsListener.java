@@ -2,12 +2,15 @@ package wueffi.BedWars.utils;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.TNT;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import wueffi.MiniGameCore.managers.LobbyManager;
 import wueffi.MiniGameCore.utils.Team;
@@ -15,6 +18,12 @@ import wueffi.MiniGameCore.utils.Team;
 import java.util.*;
 
 public class SpecialItemsListener implements Listener {
+
+    private final Plugin plugin;
+
+    public SpecialItemsListener(Plugin plugin) {
+        this.plugin = plugin;
+    }
 
     private static final Set<Material> BREAKABLE_BLOCKS = new HashSet<>(Arrays.asList(
             Material.OAK_PLANKS,
@@ -67,18 +76,14 @@ public class SpecialItemsListener implements Listener {
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
-        if (!(event.getEntity() instanceof Fireball)) {
-            return;
+        if ((event.getEntity() instanceof Fireball) || (event.getEntity() instanceof TNT) || (event.getEntity() instanceof TNTPrimed)) {
+            event.blockList().removeIf(block -> !BREAKABLE_BLOCKS.contains(block.getType()));
         }
-
-        event.blockList().removeIf(block -> !BREAKABLE_BLOCKS.contains(block.getType()));
     }
 
     @EventHandler
     public void onEggThrow(PlayerEggThrowEvent event) {
-
         Player player = event.getPlayer();
-
         Team team = LobbyManager.getLobbyByPlayer(player).getTeamByPlayer(player);
         if (team == null) {
             return;
@@ -92,19 +97,37 @@ public class SpecialItemsListener implements Listener {
         }
 
         Material woolType = DYE_TO_WOOL.getOrDefault(dyeColor, Material.WHITE_WOOL);
+        Egg egg = event.getEgg();
 
-        Location loc = player.getEyeLocation();
-        Vector direction = loc.getDirection().normalize();
+        new BukkitRunnable() {
+            private Location lastBlock = null;
+            private int placedBlocks = 0;
 
-        for (int i = 1; i <= 30; i++) {
-            Location blockLoc = loc.clone().add(direction.multiply(i));
-            Block block = blockLoc.getBlock();
+            @Override
+            public void run() {
+                if (egg.isDead() || !egg.isValid() || placedBlocks >= 30) {
+                    cancel();
+                    return;
+                }
 
-            if (block.getType() != Material.AIR) {
-                break;
+                Location current = egg.getLocation();
+                Location currentBlock = current.getBlock().getLocation();
+
+                if (lastBlock == null) {
+                    lastBlock = currentBlock;
+                    return;
+                }
+                if (!currentBlock.equals(lastBlock)) {
+                    Block placeBlock = lastBlock.getBlock();
+
+                    if (placeBlock.getType() == Material.AIR) {
+                        placeBlock.setType(woolType);
+                        placedBlocks++;
+                    }
+
+                    lastBlock = currentBlock;
+                }
             }
-
-            block.setType(woolType);
-        }
+        }.runTaskTimer(plugin, 0L, 1L);
     }
 }

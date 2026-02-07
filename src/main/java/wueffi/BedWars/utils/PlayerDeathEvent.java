@@ -3,9 +3,12 @@ package wueffi.BedWars.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import wueffi.MiniGameCore.api.MiniGameCoreAPI;
@@ -13,6 +16,8 @@ import wueffi.MiniGameCore.utils.Lobby;
 import wueffi.MiniGameCore.utils.Team;
 
 import java.util.Map;
+
+import static wueffi.BedWars.utils.ShopListener.currentSharpnessLevel;
 
 public class PlayerDeathEvent implements Listener {
 
@@ -53,6 +58,10 @@ public class PlayerDeathEvent implements Listener {
                         player.setSaturation(20);
                         player.sendTitle("§a§lRESPAWNED!", "", 0, 20, 10);
                         player.setGameMode(GameMode.SURVIVAL);
+                        ItemStack sword = new ItemStack(Material.WOODEN_SWORD);
+                        if (!currentSharpnessLevel.containsKey(team)) ShopListener.setUpTeamLevels(team);
+                        if (currentSharpnessLevel.get(team) == 1) sword.addEnchantment(Enchantment.SHARPNESS, 1);
+                        player.getInventory().setItem(0, sword);
                         this.cancel();
                     }
                 }
