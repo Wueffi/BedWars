@@ -29,10 +29,10 @@ public class PlayerDeathEvent implements Listener {
     private final Lobby lobby;
     private final Map<String, Boolean> bedStatus;
 
-    public PlayerDeathEvent(Plugin plugin, Lobby lobby, Map<String, Boolean> bedStatus) {
+    public PlayerDeathEvent(Plugin plugin, Lobby lobby, BedChecker bedChecker ) {
         this.plugin = plugin;
         this.lobby = lobby;
-        this.bedStatus = bedStatus;
+        this.bedStatus = bedChecker.getBedStatus();
     }
 
     @EventHandler
@@ -63,7 +63,6 @@ public class PlayerDeathEvent implements Listener {
                     } else {
                         Location respawnLoc = getTeamSpawnLocation(teamColor, player);
                         player.teleport(respawnLoc);
-                        MiniGameCoreAPI.playerAlive(player.getUniqueId());
                         for (int i = 0; i < 36; i++) {
                             player.getInventory().setItem(i, null);
                         }
@@ -90,8 +89,12 @@ public class PlayerDeathEvent implements Listener {
 
     @EventHandler
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player damager)) return;
         if (!(event.getEntity() instanceof Player damaged)) return;
+        if (damaged.getLocation().getBlockY() < -64) {
+            damaged.setHealth(0);
+            return;
+        }
+        if (!(event.getDamager() instanceof Player damager)) return;
 
         Lobby lobby = LobbyManager.getLobbyByPlayer(damager);
         if (lobby == null) return;
