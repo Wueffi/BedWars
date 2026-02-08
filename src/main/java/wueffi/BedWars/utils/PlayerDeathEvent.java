@@ -20,7 +20,6 @@ import wueffi.MiniGameCore.utils.Lobby;
 import wueffi.MiniGameCore.utils.Team;
 
 import java.util.Map;
-import java.util.Objects;
 
 import static wueffi.BedWars.utils.ShopListener.currentSharpnessLevel;
 
@@ -62,9 +61,9 @@ public class PlayerDeathEvent implements Listener {
                         player.sendTitle("§c§lYOU DIED!", "§6Respawning in §a" + countdown + "§6...", 0, 25, 0);
                         countdown--;
                     } else {
-                        Location respawnLoc = getTeamSpawnLocation(teamColor);
-                        plugin.getLogger().info(respawnLoc.toString());
+                        Location respawnLoc = getTeamSpawnLocation(teamColor, player);
                         player.teleport(respawnLoc);
+                        MiniGameCoreAPI.playerAlive(player.getUniqueId());
                         for (int i = 0; i < 36; i++) {
                             player.getInventory().setItem(i, null);
                         }
@@ -103,13 +102,17 @@ public class PlayerDeathEvent implements Listener {
         if (damagerTeam == null || damagedTeam == null) return;
 
         if (damagerTeam.getColor().equals(damagedTeam.getColor())) {
-            damaged.sendMessage("§7[§6MiniGameCore§7] §cYou can't PVP with your teammate!");
             damager.sendMessage("§7[§6MiniGameCore§7] §cYou can't PVP with your teammate!");
             event.setCancelled(true);
         }
     }
 
-    private Location getTeamSpawnLocation(String teamColor) {
+    @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        event.setCancelled(true);
+    }
+
+    private Location getTeamSpawnLocation(String teamColor, Player player) {
         int x = 0, y = 66, z = 0;
 
         switch (teamColor) {
@@ -131,6 +134,6 @@ public class PlayerDeathEvent implements Listener {
                 break;
         }
 
-        return new Location(Bukkit.getWorld(lobby.getWorldFolder().getName()), x, y, z);
+        return new Location(player.getWorld(), x, y, z);
     }
 }

@@ -78,6 +78,7 @@ public class GameListener implements Listener {
 
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 for (Player player : lobby.getPlayers()) {
+                    player.getEnderChest().clear();
                     String color = lobby.getTeamByPlayer(player).getColor();
                     Color leatherColor = getTeamLeatherColor(color);
 
