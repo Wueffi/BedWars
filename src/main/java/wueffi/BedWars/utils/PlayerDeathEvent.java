@@ -8,14 +8,19 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import wueffi.MiniGameCore.api.MiniGameCoreAPI;
+import wueffi.MiniGameCore.managers.LobbyManager;
 import wueffi.MiniGameCore.utils.Lobby;
 import wueffi.MiniGameCore.utils.Team;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static wueffi.BedWars.utils.ShopListener.currentSharpnessLevel;
 
@@ -34,6 +39,12 @@ public class PlayerDeathEvent implements Listener {
     @EventHandler
     public void onPlayerDeath(org.bukkit.event.entity.PlayerDeathEvent event) {
         Player player = event.getEntity();
+
+        Lobby lobby = LobbyManager.getLobbyByPlayer(player);
+        if (lobby == null) {
+            return;
+        }
+
         Team team = lobby.getTeamByPlayer(player);
 
         if (team == null) {
@@ -54,6 +65,12 @@ public class PlayerDeathEvent implements Listener {
                         Location respawnLoc = getTeamSpawnLocation(teamColor);
                         plugin.getLogger().info(respawnLoc.toString());
                         player.teleport(respawnLoc);
+                        for (int i = 0; i < 36; i++) {
+                            player.getInventory().setItem(i, null);
+                        }
+                        player.setItemOnCursor(null);
+                        player.getInventory().setItemInOffHand(null);
+                        player.getActivePotionEffects().clear();
                         player.setHealth(20);
                         player.setSaturation(20);
                         player.sendTitle("§a§lRESPAWNED!", "", 0, 20, 10);
@@ -69,6 +86,26 @@ public class PlayerDeathEvent implements Listener {
         } else {
             player.sendTitle("§c§lYOU DIED!", "§7Your bed is broken!", 0, 60, 20);
             MiniGameCoreAPI.playerDeath(player.getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player damager)) return;
+        if (!(event.getEntity() instanceof Player damaged)) return;
+
+        Lobby lobby = LobbyManager.getLobbyByPlayer(damager);
+        if (lobby == null) return;
+
+        Team damagerTeam = lobby.getTeamByPlayer(damager);
+        Team damagedTeam = lobby.getTeamByPlayer(damaged);
+
+        if (damagerTeam == null || damagedTeam == null) return;
+
+        if (damagerTeam.getColor().equals(damagedTeam.getColor())) {
+            damaged.sendMessage("§7[§6MiniGameCore§7] §cYou can't PVP with your teammate!");
+            damager.sendMessage("§7[§6MiniGameCore§7] §cYou can't PVP with your teammate!");
+            event.setCancelled(true);
         }
     }
 

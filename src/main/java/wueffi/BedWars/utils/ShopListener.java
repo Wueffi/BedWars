@@ -17,6 +17,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import wueffi.MiniGameCore.managers.LobbyManager;
+import wueffi.MiniGameCore.utils.Lobby;
 import wueffi.MiniGameCore.utils.Team;
 
 import java.util.*;
@@ -73,7 +74,12 @@ public class ShopListener implements Listener {
     public void onClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
 
-        Team team = LobbyManager.getLobbyByPlayer(player).getTeamByPlayer(player);
+        Lobby lobby = LobbyManager.getLobbyByPlayer(player);
+        if (lobby == null) {
+            return;
+        }
+
+        Team team = lobby.getTeamByPlayer(player);
 
         if (!shopInventories.containsKey(player.getUniqueId())) return;
         if (!event.getInventory().equals(shopInventories.get(player.getUniqueId()))) return;
@@ -146,51 +152,51 @@ public class ShopListener implements Listener {
                 player.closeInventory();
                 applySharpness(team);
             }
-
             case "§aAlready bought!" -> {
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
                 return;
             }
             default -> {
                 ItemStack item = clicked.clone();
-                item.setLore(Collections.singletonList(""));
+                ItemMeta meta = item.getItemMeta();
+                if (meta != null) {
+                    meta.setLore(null);
+                    item.setItemMeta(meta);
+                }
 
-                if (item.equals(ItemStack.of(Material.CHAINMAIL_CHESTPLATE))) {
-                    ItemStack helmet = player.getInventory().getHelmet();
-                    if (currentProtectionLevel.get(team) > 0) {
-                        helmet.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
-                    }
-                    player.getInventory().setHelmet(helmet);
+                if (clicked.getType() == Material.CHAINMAIL_CHESTPLATE) {
+                    ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS);
+                    ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS);
 
-                    ItemStack chestplate = new ItemStack(Material.CHAINMAIL_CHESTPLATE);
-                    if (currentProtectionLevel.get(team) > 0) {
-                        chestplate.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    if (currentProtectionLevel.get(team) != null && currentProtectionLevel.get(team) > 0) {
+                        leggings.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                        boots.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
                     }
-                    player.getInventory().setHelmet(chestplate);
-                } else if (item.equals(ItemStack.of(Material.IRON_CHESTPLATE))) {
-                    ItemStack helmet = new ItemStack(Material.IRON_HELMET);
-                    if (currentProtectionLevel.get(team) > 0) {
-                        helmet.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
-                    }
-                    player.getInventory().setHelmet(helmet);
 
-                    ItemStack chestplate = new ItemStack(Material.IRON_CHESTPLATE);
-                    if (currentProtectionLevel.get(team) > 0) {
-                        chestplate.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
-                    }
-                    player.getInventory().setHelmet(chestplate);
-                } else if (item.equals(ItemStack.of(Material.DIAMOND_CHESTPLATE))) {
-                    ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET);
-                    if (currentProtectionLevel.get(team) > 0) {
-                        helmet.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
-                    }
-                    player.getInventory().setHelmet(helmet);
+                    player.getInventory().setLeggings(leggings);
+                    player.getInventory().setBoots(boots);
+                } else if (clicked.getType() == Material.IRON_CHESTPLATE) {
+                    ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS);
+                    ItemStack boots = new ItemStack(Material.IRON_BOOTS);
 
-                    ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
-                    if (currentProtectionLevel.get(team) > 0) {
-                        chestplate.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    if (currentProtectionLevel.get(team) != null && currentProtectionLevel.get(team) > 0) {
+                        leggings.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                        boots.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
                     }
-                    player.getInventory().setHelmet(chestplate);
+
+                    player.getInventory().setLeggings(leggings);
+                    player.getInventory().setBoots(boots);
+                } else if (clicked.getType() == Material.DIAMOND_CHESTPLATE) {
+                    ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS);
+                    ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS);
+
+                    if (currentProtectionLevel.get(team) != null && currentProtectionLevel.get(team) > 0) {
+                        leggings.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                        boots.addEnchantment(Enchantment.PROTECTION, currentProtectionLevel.get(team));
+                    }
+
+                    player.getInventory().setLeggings(leggings);
+                    player.getInventory().setBoots(boots);
                 } else {
                     player.getInventory().addItem(item);
                 }

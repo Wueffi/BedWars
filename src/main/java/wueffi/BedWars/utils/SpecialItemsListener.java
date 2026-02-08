@@ -13,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import wueffi.MiniGameCore.managers.LobbyManager;
+import wueffi.MiniGameCore.utils.Lobby;
 import wueffi.MiniGameCore.utils.Team;
 
 import java.util.*;
@@ -68,9 +69,9 @@ public class SpecialItemsListener implements Listener {
         if (event.getBlock().getType() != Material.TNT) {
             return;
         }
-        event.setCancelled(true);
 
         Location loc = event.getBlock().getLocation();
+        loc.getBlock().setType(Material.AIR);
         loc.getWorld().spawnEntity(loc.add(0.5, 0.5, 0.5), EntityType.TNT);
     }
 
@@ -84,7 +85,12 @@ public class SpecialItemsListener implements Listener {
     @EventHandler
     public void onEggThrow(PlayerEggThrowEvent event) {
         Player player = event.getPlayer();
-        Team team = LobbyManager.getLobbyByPlayer(player).getTeamByPlayer(player);
+
+        Lobby lobby = LobbyManager.getLobbyByPlayer(player);
+        if (lobby == null) {
+            return;
+        }
+        Team team = lobby.getTeamByPlayer(player);
         if (team == null) {
             return;
         }
