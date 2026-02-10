@@ -1,9 +1,6 @@
 package wueffi.BedWars.utils;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -92,6 +89,7 @@ public class BedChecker {
         }
         for (Player player : lobby.getPlayers()) {
             player.sendMessage(message);
+            player.playSound(player, Sound.ENTITY_ENDER_DRAGON_DEATH, 1f, 1f);
         }
     }
 

@@ -24,6 +24,7 @@ public class checkWins {
         checkTask = new BukkitRunnable() {
             @Override
             public void run() {
+                playerUnderYZero(lobby);
                 int aliveTeams = 0;
                 Team lastAliveTeam = null;
 
@@ -51,6 +52,14 @@ public class checkWins {
     public void stopChecking() {
         if (checkTask != null) {
             checkTask.cancel();
+        }
+    }
+
+    public void playerUnderYZero(Lobby lobby) {
+        for (Player player : lobby.getPlayers()) {
+            if (player.getLocation().y() <=0) {
+                player.setHealth(0);
+            }
         }
     }
 }
