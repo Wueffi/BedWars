@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import wueffi.BedWars.generic.checkWins;
 import wueffi.MiniGameCore.api.GameStartEvent;
+import wueffi.MiniGameCore.api.GameEndEvent;
 import wueffi.MiniGameCore.api.MiniGameCoreAPI;
 import wueffi.MiniGameCore.managers.LobbyManager;
 import wueffi.MiniGameCore.utils.Lobby;
@@ -20,6 +21,7 @@ import java.util.Objects;
 public class GameListener implements Listener {
 
     private final Plugin plugin;
+    private checkWins winChecker;
 
     public GameListener(Plugin plugin) {
         this.plugin = plugin;
@@ -51,7 +53,7 @@ public class GameListener implements Listener {
             SpecialItemsListener sListener = new SpecialItemsListener(plugin);
             Bukkit.getPluginManager().registerEvents(sListener, plugin);
 
-            checkWins winChecker = new checkWins(plugin, lobby, bedChecker);
+            winChecker = new checkWins(plugin, lobby, bedChecker);
             winChecker.startChecking();
 
             World world = Bukkit.getWorld(lobby.getWorldFolder().getName());
@@ -113,6 +115,15 @@ public class GameListener implements Listener {
                 }
                 generators.startGenerators();
             }, 201L);
+        }
+    }
+
+    @EventHandler
+    public void onGameEnd(GameEndEvent event) {
+        String name = event.getGameName();
+
+        if (Objects.equals(name, "BedWars")) {
+            winChecker.stopChecking();
         }
     }
 

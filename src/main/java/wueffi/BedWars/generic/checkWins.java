@@ -57,8 +57,10 @@ public class checkWins {
 
     public void playerUnderYZero(Lobby lobby) {
         for (Player player : lobby.getPlayers()) {
-            if (player.getLocation().y() <=0) {
-                player.setHealth(0);
+            if (player.getWorld().getName().equals(lobby.getWorldFolder().getName())) {
+                if (player.getLocation().y() <=0) {
+                    player.setHealth(0);
+                }
             }
         }
     }
