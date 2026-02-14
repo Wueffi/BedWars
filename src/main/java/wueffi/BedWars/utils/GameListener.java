@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import wueffi.BedWars.generic.checkWins;
 import wueffi.MiniGameCore.api.GameStartEvent;
-import wueffi.MiniGameCore.api.GameEndEvent;
+import wueffi.MiniGameCore.api.GameOverEvent;
 import wueffi.MiniGameCore.api.MiniGameCoreAPI;
 import wueffi.MiniGameCore.managers.LobbyManager;
 import wueffi.MiniGameCore.utils.Lobby;
@@ -119,7 +119,7 @@ public class GameListener implements Listener {
     }
 
     @EventHandler
-    public void onGameEnd(GameEndEvent event) {
+    public void onGameEnd(GameOverEvent event) {
         String name = event.getGameName();
 
         if (Objects.equals(name, "BedWars")) {
