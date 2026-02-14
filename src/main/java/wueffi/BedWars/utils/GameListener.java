@@ -120,7 +120,8 @@ public class GameListener implements Listener {
 
     @EventHandler
     public void onGameEnd(GameOverEvent event) {
-        String name = event.getGameName();
+        Lobby lobby = event.getLobby();
+        String name = lobby.getGameName();
 
         if (Objects.equals(name, "BedWars")) {
             winChecker.stopChecking();
