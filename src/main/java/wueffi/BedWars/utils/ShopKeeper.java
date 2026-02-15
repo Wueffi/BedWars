@@ -23,8 +23,8 @@ public class ShopKeeper {
     public static Villager spawnShopKeeper(Location loc, String color, World world, float yaw, boolean teamShop) {
         loc.setYaw(yaw);
         Villager villager = (Villager) world.spawnEntity(loc, EntityType.VILLAGER);
-        if (teamShop) villager.setCustomName(getChatColor(color) + color + "Team " + " Shop");
-        else villager.setCustomName(getChatColor(color) + color + "Team Upgrades");
+        if (teamShop) villager.setCustomName(getChatColor(color) + color + " Team " + " Shop");
+        else villager.setCustomName(getChatColor(color) + color + " Team Upgrades");
         villager.setCustomNameVisible(true);
         villager.setInvulnerable(true);
         villager.setAI(false);

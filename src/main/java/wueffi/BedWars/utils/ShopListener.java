@@ -116,8 +116,6 @@ public class ShopListener implements Listener {
             return;
         }
 
-        player.sendMessage(title);
-
         switch (title) {
             case "§bProtection 1" -> {
                 player.closeInventory();

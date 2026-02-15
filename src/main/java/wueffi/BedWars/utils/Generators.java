@@ -148,12 +148,13 @@ public class Generators {
                     countdown--;
                 } else {
                     emeraldLevel = 2;
+                    for (Player player : lobby.getPlayers()) {
+                        player.sendMessage("§aEmerald Generators §7are now Level §a2§7!");
+                    }
                     for (ArmorStand holo : emeraldHolos2) {
                         holoGram.updateText(holo, "§aEmerald II");
-                        for (Player player : lobby.getPlayers()) {
-                            player.sendMessage("§aDiamond Generators §7are now Level §a2§7!");
-                        }
                     }
+                    this.cancel();
                 }
             }
         }.runTaskTimer(plugin, 0L, 20L);
@@ -170,12 +171,13 @@ public class Generators {
                     countdown--;
                 } else {
                     diamondLevel = 2;
+                    for (Player player : lobby.getPlayers()) {
+                        player.sendMessage("§bDiamond Generators §7are now Level §b2§7!");
+                    }
                     for (ArmorStand holo : diamondHolos2) {
                         holoGram.updateText(holo, "§bDiamond II");
-                        for (Player player : lobby.getPlayers()) {
-                            player.sendMessage("§bDiamond Generators §7are now Level §b2§7!");
-                        }
                     }
+                    this.cancel();
                 }
             }
         }.runTaskTimer(plugin, 0L, 20L);
