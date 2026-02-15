@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import wueffi.MiniGameCore.utils.Lobby;
 
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ public class Generators {
     private final Location[] emeraldGenerators;
     private final Location[] diamondGenerators;
     private final Location[] teamGenerators;
+
+    private final List<BukkitTask> tasks = new ArrayList<>();
 
     private int emeraldLevel = 1;
     private int diamondLevel = 1;
@@ -73,7 +76,7 @@ public class Generators {
             diamondHolos2.add(holo2);
         }
 
-        new BukkitRunnable() {
+        tasks.add(new BukkitRunnable() {
             int countdown = 30;
 
             @Override
@@ -92,9 +95,9 @@ public class Generators {
                     countdown = 29;
                 }
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        }.runTaskTimer(plugin, 0L, 20L));
 
-        new BukkitRunnable() {
+        tasks.add(new BukkitRunnable() {
             int countdown = 65;
 
             @Override
@@ -113,16 +116,16 @@ public class Generators {
                     countdown = 64;
                 }
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        }.runTaskTimer(plugin, 0L, 20L));
 
-        new BukkitRunnable() {
+        tasks.add(new BukkitRunnable() {
             @Override
             public void run() {
                 spawnIron();
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        }.runTaskTimer(plugin, 0L, 20L));
 
-        new BukkitRunnable() {
+        tasks.add(new BukkitRunnable() {
             int countdown = 8;
 
             @Override
@@ -134,9 +137,9 @@ public class Generators {
                     countdown = 7;
                 }
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        }.runTaskTimer(plugin, 0L, 20L));
 
-        new BukkitRunnable() {
+        tasks.add(new BukkitRunnable() {
             int countdown = 180;
 
             @Override
@@ -157,9 +160,9 @@ public class Generators {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        }.runTaskTimer(plugin, 0L, 20L));
 
-        new BukkitRunnable() {
+        tasks.add(new BukkitRunnable() {
             int countdown = 120;
 
             @Override
@@ -180,7 +183,13 @@ public class Generators {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        }.runTaskTimer(plugin, 0L, 20L));
+    }
+
+    public void stopGenerators() {
+        for (BukkitTask task : tasks) {
+            task.cancel();
+        }
     }
 
     private int countNearbyItems(Location loc, Material material, double radius) {

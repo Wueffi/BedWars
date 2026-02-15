@@ -23,6 +23,7 @@ public class GameListener implements Listener {
     private final Plugin plugin;
     private checkWins winChecker;
     private BedChecker bedChecker;
+    private Generators generators;
 
     public GameListener(Plugin plugin) {
         this.plugin = plugin;
@@ -49,7 +50,7 @@ public class GameListener implements Listener {
             ShopListener shopListener = new ShopListener(plugin);
             Bukkit.getPluginManager().registerEvents(shopListener, plugin);
 
-            Generators generators = new Generators(plugin, lobby, shopListener);
+            generators = new Generators(plugin, lobby, shopListener);
 
             SpecialItemsListener sListener = new SpecialItemsListener(plugin);
             Bukkit.getPluginManager().registerEvents(sListener, plugin);
@@ -136,6 +137,7 @@ public class GameListener implements Listener {
         if (Objects.equals(name, "BedWars")) {
             winChecker.stopChecking();
             bedChecker.stopChecking();
+            generators.stopGenerators();
         }
     }
 
