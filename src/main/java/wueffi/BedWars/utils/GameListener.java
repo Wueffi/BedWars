@@ -22,6 +22,7 @@ public class GameListener implements Listener {
 
     private final Plugin plugin;
     private checkWins winChecker;
+    private BedChecker bedChecker;
 
     public GameListener(Plugin plugin) {
         this.plugin = plugin;
@@ -57,26 +58,35 @@ public class GameListener implements Listener {
             winChecker.startChecking();
 
             World world = Bukkit.getWorld(lobby.getWorldFolder().getName());
+            if (world == null) {
+                plugin.getLogger().warning("World was null for Lobby " + lobbyId + "(" + lobby.getWorldFolder().getName() + ")");
+                return;
+            }
+            world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+            world.setGameRule(GameRule.DO_FIRE_TICK, false);
 
-            Villager redShop = ShopKeeper.spawnShopKeeper(new Location(world, -5.5, 66, 80), ShopKeeper.DyeColor.RED, world, 270, false);
-            Villager blueShop = ShopKeeper.spawnShopKeeper(new Location(world, -79, 66, -5.5), ShopKeeper.DyeColor.BLUE, world, 0, false);
-            Villager yellowShop = ShopKeeper.spawnShopKeeper(new Location(world, 6.5, 66, -79), ShopKeeper.DyeColor.YELLOW, world, 90, false);
-            Villager greenShop = ShopKeeper.spawnShopKeeper(new Location(world, 80, 66, 6.5), ShopKeeper.DyeColor.GREEN, world, 180, false);
+            BlockListener blockListener = new BlockListener(world, lobby);
+            Bukkit.getPluginManager().registerEvents(blockListener, plugin);
 
-            shopListener.registerShopKeeper(redShop, ShopKeeper.DyeColor.RED, false);
-            shopListener.registerShopKeeper(blueShop, ShopKeeper.DyeColor.BLUE, false);
-            shopListener.registerShopKeeper(yellowShop, ShopKeeper.DyeColor.YELLOW, false);
-            shopListener.registerShopKeeper(greenShop, ShopKeeper.DyeColor.GREEN, false);
+            Villager redShop = ShopKeeper.spawnShopKeeper(new Location(world, -5.5, 66, 80), "Red", world, 270, false);
+            Villager blueShop = ShopKeeper.spawnShopKeeper(new Location(world, -79, 66, -5.5), "Blue", world, 0, false);
+            Villager yellowShop = ShopKeeper.spawnShopKeeper(new Location(world, 6.5, 66, -79), "Yellow", world, 90, false);
+            Villager greenShop = ShopKeeper.spawnShopKeeper(new Location(world, 80, 66, 6.5), "Green", world, 180, false);
 
-            Villager redTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, 6.5, 66, 80), ShopKeeper.DyeColor.RED, world, 90, true);
-            Villager blueTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, -79, 66, 6.5), ShopKeeper.DyeColor.BLUE, world, 180, true);
-            Villager yellowTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, -5.5, 66, -79), ShopKeeper.DyeColor.YELLOW, world, 270, true);
-            Villager greenTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, 80, 66, -5.5), ShopKeeper.DyeColor.GREEN, world, 0, true);
+            shopListener.registerShopKeeper(redShop, "Red", false);
+            shopListener.registerShopKeeper(blueShop, "Blue", false);
+            shopListener.registerShopKeeper(yellowShop, "Yellow", false);
+            shopListener.registerShopKeeper(greenShop, "Green", false);
 
-            shopListener.registerShopKeeper(redTeamShop, ShopKeeper.DyeColor.RED, true);
-            shopListener.registerShopKeeper(blueTeamShop, ShopKeeper.DyeColor.BLUE, true);
-            shopListener.registerShopKeeper(yellowTeamShop, ShopKeeper.DyeColor.YELLOW, true);
-            shopListener.registerShopKeeper(greenTeamShop, ShopKeeper.DyeColor.GREEN, true);
+            Villager redTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, 6.5, 66, 80), "Red", world, 90, true);
+            Villager blueTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, -79, 66, 6.5), "Blue", world, 180, true);
+            Villager yellowTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, -5.5, 66, -79), "Yellow", world, 270, true);
+            Villager greenTeamShop = ShopKeeper.spawnShopKeeper(new Location(world, 80, 66, -5.5), "Green", world, 0, true);
+
+            shopListener.registerShopKeeper(redTeamShop, "Red", true);
+            shopListener.registerShopKeeper(blueTeamShop, "Blue", true);
+            shopListener.registerShopKeeper(yellowTeamShop, "Yellow", true);
+            shopListener.registerShopKeeper(greenTeamShop, "Green", true);
 
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 for (Player player : lobby.getPlayers()) {
@@ -125,6 +135,7 @@ public class GameListener implements Listener {
 
         if (Objects.equals(name, "BedWars")) {
             winChecker.stopChecking();
+            bedChecker.stopChecking();
         }
     }
 

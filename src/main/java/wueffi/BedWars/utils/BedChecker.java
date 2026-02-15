@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import wueffi.MiniGameCore.utils.Lobby;
 
 import java.util.HashMap;
@@ -18,6 +19,7 @@ public class BedChecker {
     private final Map<String, BedLocation> bedLocations;
     private final Lobby lobby;
     private final BedBreakListener bedBreakListener;
+    private BukkitTask checkTask;
 
     public BedChecker(Plugin plugin, Lobby lobby, BedBreakListener bedBreakListener) {
         this.plugin = plugin;
@@ -42,12 +44,18 @@ public class BedChecker {
     }
 
     public void startChecking() {
-        new BukkitRunnable() {
+        checkTask = new BukkitRunnable() {
             @Override
             public void run() {
                 checkBeds();
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    public void stopChecking() {
+        if (checkTask != null) {
+            checkTask.cancel();
+        }
     }
 
     private void checkBeds() {

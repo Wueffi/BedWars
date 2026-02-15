@@ -20,12 +20,11 @@ public class ShopKeeper {
         this.lobby = lobby;
     }
 
-    public static Villager spawnShopKeeper(Location loc, DyeColor color, World world, float yaw, boolean teamShop) {
+    public static Villager spawnShopKeeper(Location loc, String color, World world, float yaw, boolean teamShop) {
         loc.setYaw(yaw);
         Villager villager = (Villager) world.spawnEntity(loc, EntityType.VILLAGER);
-        String color2 = color.name().substring(1).toLowerCase();
-        if (teamShop) villager.setCustomName(color.chatColor() + "Team " + color.name().charAt(0) + color2 + " Shop");
-        else villager.setCustomName(color.chatColor() + "Team " + color.name().charAt(0) + color2 + " Upgrades");
+        if (teamShop) villager.setCustomName(getChatColor(color) + color + "Team " + " Shop");
+        else villager.setCustomName(getChatColor(color) + color + "Team Upgrades");
         villager.setCustomNameVisible(true);
         villager.setInvulnerable(true);
         villager.setAI(false);
@@ -46,20 +45,13 @@ public class ShopKeeper {
         shopKeepers.clear();
     }
 
-    enum DyeColor {
-        RED(ChatColor.DARK_RED),
-        BLUE(ChatColor.DARK_BLUE),
-        YELLOW(ChatColor.YELLOW),
-        GREEN(ChatColor.DARK_GREEN);
-
-        private final ChatColor chatColor;
-
-        DyeColor(ChatColor chatColor) {
-            this.chatColor = chatColor;
-        }
-
-        public ChatColor chatColor() {
-            return chatColor;
-        }
+    public static String getChatColor(String color) {
+        return switch (color) {
+            case "Red" -> "§4";
+            case "Blue" -> "§1";
+            case "Yellow" -> "§e";
+            case "Green" -> "§2";
+            default -> "§f";
+        };
     }
 }

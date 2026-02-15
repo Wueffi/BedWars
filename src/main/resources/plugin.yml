@@ -1,6 +1,6 @@
 name: BedWars
-version: '1.0-SNAPSHOT'
+version: '1.0'
 main: wueffi.BedWars.BedWarsMain
 api-version: '1.21'
-authors: [ "Waffle [ Wueffi ]" ]
+authors: [ "Waffle [Wueffi]" ]
 website: https://github.com/Wueffi

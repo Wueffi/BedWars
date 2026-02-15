@@ -7,9 +7,11 @@ import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -22,6 +24,7 @@ import java.util.*;
 public class SpecialItemsListener implements Listener {
 
     private final Plugin plugin;
+    private final Map<UUID, Long> cooldowns = new HashMap<>();
 
     public SpecialItemsListener(Plugin plugin) {
         this.plugin = plugin;
@@ -56,8 +59,23 @@ public class SpecialItemsListener implements Listener {
             return;
         }
 
+        UUID playerId = player.getUniqueId();
+        long currentTime = System.currentTimeMillis();
+        if (cooldowns.containsKey(playerId)) {
+            long timeSinceLastUse = currentTime - cooldowns.get(playerId);
+            if (timeSinceLastUse < 50) {
+                return;
+            }
+        }
+        cooldowns.put(playerId, currentTime);
+
         event.setCancelled(true);
-        event.getItem().setAmount(event.getItem().getAmount() - 1);
+        ItemStack item = event.getItem();
+        if (item.getAmount() > 1) {
+            item.setAmount(item.getAmount() - 1);
+        } else {
+            player.getInventory().setItemInMainHand(null);
+        }
 
         Vector direction = player.getEyeLocation().getDirection().normalize();
         Location spawnLocation = player.getEyeLocation().add(direction.multiply(1.5));
@@ -66,6 +84,15 @@ public class SpecialItemsListener implements Listener {
         fireball.setDirection(direction.multiply(15));
         fireball.setYield(4.0f);
         fireball.setShooter(player);
+    }
+
+    @EventHandler
+    public void onFireballDamage(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Fireball fireball) {
+            if (fireball.getShooter() instanceof Player) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler

@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -27,16 +26,19 @@ public class PlayerDeathEvent implements Listener {
 
     private final Plugin plugin;
     private final Lobby lobby;
-    private final Map<String, Boolean> bedStatus;
+    private Map<String, Boolean> bedStatus;
+    private final BedChecker bedChecker;
 
     public PlayerDeathEvent(Plugin plugin, Lobby lobby, BedChecker bedChecker ) {
         this.plugin = plugin;
         this.lobby = lobby;
         this.bedStatus = bedChecker.getBedStatus();
+        this.bedChecker = bedChecker;
     }
 
     @EventHandler
     public void onPlayerDeath(org.bukkit.event.entity.PlayerDeathEvent event) {
+        bedStatus = bedChecker.getBedStatus();
         Player player = event.getEntity();
 
         Lobby lobby = LobbyManager.getLobbyByPlayer(player);
@@ -63,20 +65,12 @@ public class PlayerDeathEvent implements Listener {
                     } else {
                         Location respawnLoc = getTeamSpawnLocation(teamColor, player);
                         player.teleport(respawnLoc);
-                        for (int i = 0; i < 36; i++) {
-                            player.getInventory().setItem(i, null);
-                        }
-                        player.setItemOnCursor(null);
-                        player.getInventory().setItemInOffHand(null);
+                        handleInventory(player);
                         player.getActivePotionEffects().clear();
                         player.setHealth(20);
                         player.setSaturation(20);
                         player.sendTitle("§a§lRESPAWNED!", "", 0, 20, 10);
                         player.setGameMode(GameMode.SURVIVAL);
-                        ItemStack sword = new ItemStack(Material.WOODEN_SWORD);
-                        if (!currentSharpnessLevel.containsKey(team)) ShopListener.setUpTeamLevels(team);
-                        if (currentSharpnessLevel.get(team) == 1) sword.addEnchantment(Enchantment.SHARPNESS, 1);
-                        player.getInventory().setItem(0, sword);
                         this.cancel();
                     }
                 }
@@ -84,6 +78,45 @@ public class PlayerDeathEvent implements Listener {
         } else {
             player.sendTitle("§c§lYOU DIED!", "§7Your bed is broken!", 0, 60, 20);
             MiniGameCoreAPI.playerDeath(player.getUniqueId());
+        }
+    }
+
+    public void handleInventory(Player player) {
+        Team team = lobby.getTeamByPlayer(player);
+
+        boolean hasPickaxe = false;
+        boolean hasShears = false;
+
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null) {
+                if (item.getType().name().contains("PICKAXE")) {
+                    hasPickaxe = true;
+                }
+                if (item.getType() == Material.SHEARS) {
+                    hasShears = true;
+                }
+            }
+        }
+
+        for (int i = 0; i < 36; i++) {
+            player.getInventory().setItem(i, null);
+        }
+        player.setItemOnCursor(null);
+        player.getInventory().setItemInOffHand(null);
+
+        ItemStack sword = new ItemStack(Material.WOODEN_SWORD);
+        if (!currentSharpnessLevel.containsKey(team)) ShopListener.setUpTeamLevels(team);
+        if (currentSharpnessLevel.get(team) == 1) sword.addEnchantment(Enchantment.SHARPNESS, 1);
+        player.getInventory().setItem(0, sword);
+
+        if (hasPickaxe) {
+            ItemStack axe = new ItemStack(Material.WOODEN_AXE);
+            player.getInventory().setItem(2, axe);
+        }
+
+        if (hasShears) {
+            ItemStack shears = new ItemStack(Material.SHEARS);
+            player.getInventory().setItem(3, shears);
         }
     }
 

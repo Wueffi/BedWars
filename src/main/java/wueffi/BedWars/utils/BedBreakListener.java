@@ -17,16 +17,12 @@ import java.util.Map;
 
 public class BedBreakListener implements Listener {
 
-    private final Plugin plugin;
-    private final Lobby lobby;
     private final Map<String, Location> bedLocations;
     private final Map<String, String> bedColorCodes;
     private Player lastBedBreaker;
     private String lastBrokenBedTeam;
 
     public BedBreakListener(Plugin plugin, Lobby lobby) {
-        this.plugin = plugin;
-        this.lobby = lobby;
         this.bedLocations = new HashMap<>();
         this.bedColorCodes = new HashMap<>();
 
@@ -56,15 +52,20 @@ public class BedBreakListener implements Listener {
             String team = entry.getKey();
             Location bedLoc = entry.getValue();
 
-            if (block.getLocation().getBlockX() == bedLoc.getBlockX() &&
-                    block.getLocation().getBlockY() == bedLoc.getBlockY() &&
-                    block.getLocation().getBlockZ() == bedLoc.getBlockZ()) {
-
+            if (isBlockNearLocation(block.getLocation(), bedLoc)) {
                 lastBedBreaker = player;
                 lastBrokenBedTeam = team;
                 break;
             }
         }
+    }
+
+    public static boolean isBlockNearLocation(Location blockLoc, Location bedLoc) {
+        int dx = Math.abs(blockLoc.getBlockX() - bedLoc.getBlockX());
+        int dy = Math.abs(blockLoc.getBlockY() - bedLoc.getBlockY());
+        int dz = Math.abs(blockLoc.getBlockZ() - bedLoc.getBlockZ());
+
+        return dx <= 1 && dy <= 1 && dz <= 1;
     }
 
     private boolean isBed(Block block) {

@@ -3,6 +3,7 @@ package wueffi.BedWars.utils;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -136,7 +137,7 @@ public class Generators {
         }.runTaskTimer(plugin, 0L, 20L);
 
         new BukkitRunnable() {
-            int countdown = 120;
+            int countdown = 180;
 
             @Override
             public void run() {
@@ -149,13 +150,16 @@ public class Generators {
                     emeraldLevel = 2;
                     for (ArmorStand holo : emeraldHolos2) {
                         holoGram.updateText(holo, "§aEmerald II");
+                        for (Player player : lobby.getPlayers()) {
+                            player.sendMessage("§aDiamond Generators §7are now Level §a2§7!");
+                        }
                     }
                 }
             }
         }.runTaskTimer(plugin, 0L, 20L);
 
         new BukkitRunnable() {
-            int countdown = 90;
+            int countdown = 120;
 
             @Override
             public void run() {
@@ -168,6 +172,9 @@ public class Generators {
                     diamondLevel = 2;
                     for (ArmorStand holo : diamondHolos2) {
                         holoGram.updateText(holo, "§bDiamond II");
+                        for (Player player : lobby.getPlayers()) {
+                            player.sendMessage("§bDiamond Generators §7are now Level §b2§7!");
+                        }
                     }
                 }
             }

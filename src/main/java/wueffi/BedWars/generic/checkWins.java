@@ -32,11 +32,11 @@ public class checkWins {
                     int teamAliveCount = 0;
                     if (team.getAlivePlayers() > 0 || bedChecker.getBedStatus().getOrDefault(team.getColor(), false)) {
                         teamAliveCount++;
+                        lastAliveTeam = team;
                     }
 
                     if (teamAliveCount > 0) {
                         aliveTeams++;
-                        lastAliveTeam = team;
                     }
                 }
 

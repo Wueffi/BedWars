@@ -15,7 +15,6 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
 import wueffi.MiniGameCore.managers.LobbyManager;
 import wueffi.MiniGameCore.utils.Lobby;
 import wueffi.MiniGameCore.utils.Team;
@@ -26,7 +25,7 @@ public class ShopListener implements Listener {
 
     private final Plugin plugin;
     private final Map<UUID, Inventory> shopInventories = new HashMap<>();
-    private static Map<UUID, ShopKeeper.DyeColor> villagerColors = new HashMap<>();
+    private static Map<UUID, String> villagerColors = new HashMap<>();
     private static List<UUID> teamShops = new ArrayList<>();
 
     static Map<Team, Integer> currentSharpnessLevel = new HashMap<>();
@@ -37,7 +36,7 @@ public class ShopListener implements Listener {
         this.plugin = plugin;
     }
 
-    public void registerShopKeeper(Villager villager, ShopKeeper.DyeColor color, boolean teamShop) {
+    public void registerShopKeeper(Villager villager, String color, boolean teamShop) {
         villagerColors.put(villager.getUniqueId(), color);
         if (teamShop) {
             teamShops.add(villager.getUniqueId());
@@ -53,17 +52,17 @@ public class ShopListener implements Listener {
         }
         event.setCancelled(true);
 
-        ShopKeeper.DyeColor color = villagerColors.get(villager.getUniqueId());
+        String color = villagerColors.get(villager.getUniqueId());
         Player player = event.getPlayer();
 
         Inventory shop;
 
         if (teamShops.contains(villager.getUniqueId())) {
-            shop = Bukkit.createInventory(null, 36, color.chatColor() + "General Shop");
+            shop = Bukkit.createInventory(null, 36, color + " General Shop");
             populateShop(shop, color, player);
             shopInventories.put(player.getUniqueId(), shop);
         } else {
-            shop = Bukkit.createInventory(null, 27, color.chatColor() + "Upgrade Shop");
+            shop = Bukkit.createInventory(null, 27, color + " Upgrade Shop");
             populateTeamShop(shop, player);
             shopInventories.put(player.getUniqueId(), shop);
         }
@@ -207,7 +206,7 @@ public class ShopListener implements Listener {
         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
     }
 
-    private void populateShop(Inventory shop, ShopKeeper.DyeColor color, Player player) {
+    private void populateShop(Inventory shop, String color, Player player) {
         Material woolMaterial = getColoredWool(color);
         Team team = LobbyManager.getLobbyByPlayer(player).getTeamByPlayer(player);
 
@@ -216,7 +215,7 @@ public class ShopListener implements Listener {
         }
 
         ItemStack wool = new ItemStack(woolMaterial, 16);
-        wool.setItemMeta(createItemMeta(wool, color.chatColor() + "Wool", "Cost: 4 Iron"));
+        wool.setItemMeta(createItemMeta(wool, color + " Wool", "Cost: 4 Iron"));
         shop.setItem(0, wool);
 
         ItemStack endstone = new ItemStack(Material.END_STONE, 12);
@@ -344,7 +343,6 @@ public class ShopListener implements Listener {
         potionMeta.setDisplayName("§2Speed Potion II");
         potionMeta.setLore(Collections.singletonList("Cost: 1 Emerald"));
         potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, 900, 2), true);
-        potionMeta.setBasePotionType(PotionType.STRONG_SWIFTNESS);
         speedPotion.setItemMeta(potionMeta);
         shop.setItem(24, speedPotion);
 
@@ -353,7 +351,6 @@ public class ShopListener implements Listener {
         potionMeta2.setDisplayName("§2Jump Potion V");
         potionMeta2.setLore(Collections.singletonList("Cost: 1 Emerald"));
         potionMeta2.addCustomEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 900, 4), true);
-        potionMeta2.setBasePotionType(PotionType.STRONG_LEAPING);
         jumpPotion.setItemMeta(potionMeta2);
         shop.setItem(25, jumpPotion);
 
@@ -362,7 +359,6 @@ public class ShopListener implements Listener {
         potionMeta3.setDisplayName("§2Inivisibility Potion");
         potionMeta3.setLore(Collections.singletonList("Cost: 1 Emerald"));
         potionMeta3.addCustomEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 600, 1), true);
-        potionMeta3.setBasePotionType(PotionType.INVISIBILITY);
         invisibilityPotion.setItemMeta(potionMeta3);
         shop.setItem(26, invisibilityPotion);
         //---------
@@ -484,12 +480,12 @@ public class ShopListener implements Listener {
         return meta;
     }
 
-    private Material getColoredWool(ShopKeeper.DyeColor color) {
+    private Material getColoredWool(String color) {
         switch (color) {
-            case RED: return Material.RED_WOOL;
-            case BLUE: return Material.BLUE_WOOL;
-            case YELLOW: return Material.YELLOW_WOOL;
-            case GREEN: return Material.GREEN_WOOL;
+            case "Red": return Material.RED_WOOL;
+            case "Blue": return Material.BLUE_WOOL;
+            case "Yellow": return Material.YELLOW_WOOL;
+            case "Green": return Material.GREEN_WOOL;
             default: return Material.WHITE_WOOL;
         }
     }
