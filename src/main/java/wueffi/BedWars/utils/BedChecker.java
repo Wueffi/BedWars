@@ -49,7 +49,7 @@ public class BedChecker {
             public void run() {
                 checkBeds();
             }
-        }.runTaskTimer(plugin, 0L, 1L);
+        }.runTaskTimer(plugin, 0L, 5L);
     }
 
     public void stopChecking() {
