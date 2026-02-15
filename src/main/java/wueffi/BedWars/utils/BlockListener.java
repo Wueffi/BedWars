@@ -41,6 +41,7 @@ public class BlockListener implements Listener {
 
         Lobby lobby1 = LobbyManager.getLobbyByPlayer(player);
 
+        if (lobby1 == null) return;
         if (!lobby1.equals(lobby)) return;
         if (!player.getWorld().equals(world)) return;
 
