@@ -61,13 +61,15 @@ public class SpecialItemsListener implements Listener {
 
         UUID playerId = player.getUniqueId();
         long currentTime = System.currentTimeMillis();
-        if (cooldowns.containsKey(playerId)) {
-            long timeSinceLastUse = currentTime - cooldowns.get(playerId);
-            if (timeSinceLastUse < 50) {
+
+        Long lastUse = cooldowns.putIfAbsent(playerId, currentTime);
+        if (lastUse != null) {
+            long timeSinceLastUse = currentTime - lastUse;
+            if (timeSinceLastUse < 200) {
                 return;
             }
+            cooldowns.put(playerId, currentTime);
         }
-        cooldowns.put(playerId, currentTime);
 
         event.setCancelled(true);
         ItemStack item = event.getItem();

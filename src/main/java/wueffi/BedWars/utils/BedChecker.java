@@ -97,7 +97,7 @@ public class BedChecker {
         }
         for (Player player : lobby.getPlayers()) {
             player.sendMessage(message);
-            player.playSound(player, Sound.ENTITY_ENDER_DRAGON_DEATH, 1f, 1f);
+            player.playSound(player, Sound.ENTITY_ENDER_DRAGON_DEATH, 0.75f, 1f);
         }
     }
 
