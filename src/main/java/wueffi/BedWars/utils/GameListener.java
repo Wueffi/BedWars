@@ -40,7 +40,7 @@ public class GameListener implements Listener {
             BedBreakListener bedBreakListener = new BedBreakListener(plugin, lobby);
             Bukkit.getPluginManager().registerEvents(bedBreakListener, plugin);
 
-            BedChecker bedChecker = new BedChecker(plugin, lobby, bedBreakListener);
+            bedChecker = new BedChecker(plugin, lobby, bedBreakListener);
             bedChecker.startChecking();
 
             PlayerDeathEvent deathListener = new PlayerDeathEvent(plugin, lobby, bedChecker);
