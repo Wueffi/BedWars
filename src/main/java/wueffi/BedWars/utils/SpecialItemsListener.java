@@ -49,6 +49,9 @@ public class SpecialItemsListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        Lobby lobby = LobbyManager.getLobbyByPlayer(player);
+        if (lobby == null) return;
+
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
@@ -92,7 +95,9 @@ public class SpecialItemsListener implements Listener {
     @EventHandler
     public void onFireballDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Fireball fireball) {
-            if (fireball.getShooter() instanceof Player) {
+            if (fireball.getShooter() instanceof Player player) {
+                Lobby lobby = LobbyManager.getLobbyByPlayer(player);
+                if (lobby == null) return;
                 event.setCancelled(true);
             }
         }
@@ -100,6 +105,10 @@ public class SpecialItemsListener implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        Lobby lobby = LobbyManager.getLobbyByPlayer(player);
+        if (lobby == null) return;
+
         if (event.getBlock().getType() != Material.TNT) {
             return;
         }
