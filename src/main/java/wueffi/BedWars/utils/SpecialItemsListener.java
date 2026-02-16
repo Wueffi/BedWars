@@ -55,6 +55,7 @@ public class SpecialItemsListener implements Listener {
         if (event.getHand() != EquipmentSlot.HAND) {
             return;
         }
+        if (Objects.requireNonNull(event.getItem()).getType() == Material.EGG) eggThrow(event);
         if (event.getItem() == null || event.getItem().getType() != Material.FIRE_CHARGE) {
             return;
         }
@@ -115,8 +116,7 @@ public class SpecialItemsListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onEggThrow(PlayerEggThrowEvent event) {
+    public void eggThrow(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
         Lobby lobby = LobbyManager.getLobbyByPlayer(player);
@@ -136,37 +136,57 @@ public class SpecialItemsListener implements Listener {
         }
 
         Material woolType = DYE_TO_WOOL.getOrDefault(dyeColor, Material.WHITE_WOOL);
-        Egg egg = event.getEgg();
+
+        Vector direction = player.getEyeLocation().getDirection().normalize();
+        Location spawnLocation = player.getEyeLocation().add(direction.multiply(1.5));
+
+        Egg egg = (Egg) player.getWorld().spawnEntity(spawnLocation, EntityType.EGG);
+        egg.setRotation(player.getLocation().getYaw(), player.getLocation().getPitch());
+        egg.setVelocity(direction.multiply(1.5));
+
 
         new BukkitRunnable() {
-            private Location lastBlock = null;
+            private Location lastLocation = null;
             private int placedBlocks = 0;
 
             @Override
             public void run() {
                 if (egg.isDead() || !egg.isValid() || placedBlocks >= 30) {
+                    egg.remove();
                     cancel();
                     return;
                 }
 
                 Location current = egg.getLocation();
-                Location currentBlock = current.getBlock().getLocation();
-
-                if (lastBlock == null) {
-                    lastBlock = currentBlock;
+                if (lastLocation == null) {
+                    lastLocation = current.clone();
                     return;
                 }
-                if (!currentBlock.equals(lastBlock)) {
-                    Block placeBlock = lastBlock.getBlock();
 
-                    if (placeBlock.getType() == Material.AIR) {
-                        placeBlock.setType(woolType);
+                Vector direction = current.toVector().subtract(lastLocation.toVector());
+                double distance = direction.length();
+                if (distance == 0) return;
+
+                direction.normalize().multiply(0.25);
+                Location stepLocation = lastLocation.clone();
+
+                for (double traveled = 0; traveled < distance; traveled += 0.25) {
+                    stepLocation.add(direction);
+                    Block block = stepLocation.getBlock();
+                    Block eggBlock = egg.getLocation().getBlock();
+
+                    if (block.getType() == Material.AIR && !block.equals(eggBlock)) {
+                        block.setType(woolType);
                         placedBlocks++;
+                        if (placedBlocks >= 30) {
+                            cancel();
+                            return;
+                        }
                     }
-
-                    lastBlock = currentBlock;
                 }
+                lastLocation = current.clone();
             }
+
         }.runTaskTimer(plugin, 0L, 1L);
     }
 }

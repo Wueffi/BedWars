@@ -10,7 +10,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.Plugin;
+import wueffi.MiniGameCore.managers.LobbyManager;
 import wueffi.MiniGameCore.utils.Lobby;
+import wueffi.MiniGameCore.utils.Team;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +50,11 @@ public class BedBreakListener implements Listener {
             return;
         }
 
+        Lobby lobby = LobbyManager.getLobbyByPlayer(player);
+        if (lobby == null) return;
+        Team team1 = lobby.getTeamByPlayer(player);
+        if (team1 == null) return;
+
         for (Map.Entry<String, Location> entry : bedLocations.entrySet()) {
             String team = entry.getKey();
             Location bedLoc = entry.getValue();
@@ -55,6 +62,10 @@ public class BedBreakListener implements Listener {
             if (isBlockNearLocation(block.getLocation(), bedLoc)) {
                 lastBedBreaker = player;
                 lastBrokenBedTeam = team;
+                if (team1.getColor().equals(team)) {
+                    player.sendMessage("§cYou can't break your own Bed!");
+                    event.setCancelled(true);
+                }
                 break;
             }
         }
