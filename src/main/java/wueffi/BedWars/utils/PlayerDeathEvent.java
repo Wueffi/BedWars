@@ -112,8 +112,8 @@ public class PlayerDeathEvent implements Listener {
         player.getInventory().setItem(0, sword);
 
         if (hasPickaxe) {
-            ItemStack axe = new ItemStack(Material.WOODEN_AXE);
-            player.getInventory().setItem(2, axe);
+            ItemStack paxe = new ItemStack(Material.WOODEN_PICKAXE);
+            player.getInventory().setItem(2, paxe);
         }
 
         if (hasShears) {
