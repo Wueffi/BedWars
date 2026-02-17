@@ -28,12 +28,14 @@ public class PlayerDeathEvent implements Listener {
     private final Lobby lobby;
     private Map<String, Boolean> bedStatus;
     private final BedChecker bedChecker;
+    private final ShopListener shopListener;
 
-    public PlayerDeathEvent(Plugin plugin, Lobby lobby, BedChecker bedChecker ) {
+    public PlayerDeathEvent(Plugin plugin, Lobby lobby, BedChecker bedChecker, ShopListener shopListener) {
         this.plugin = plugin;
         this.lobby = lobby;
         this.bedStatus = bedChecker.getBedStatus();
         this.bedChecker = bedChecker;
+        this.shopListener = shopListener;
     }
 
     @EventHandler
@@ -105,7 +107,7 @@ public class PlayerDeathEvent implements Listener {
         player.getInventory().setItemInOffHand(null);
 
         ItemStack sword = new ItemStack(Material.WOODEN_SWORD);
-        if (!currentSharpnessLevel.containsKey(team)) ShopListener.setUpTeamLevels(team);
+        if (!currentSharpnessLevel.containsKey(team)) shopListener.setUpTeamLevels(team);
         if (currentSharpnessLevel.get(team) == 1) sword.addEnchantment(Enchantment.SHARPNESS, 1);
         player.getInventory().setItem(0, sword);
 

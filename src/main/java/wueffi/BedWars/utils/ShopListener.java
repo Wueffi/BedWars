@@ -464,7 +464,7 @@ public class ShopListener implements Listener {
         return currentForgeLevel.get(team);
     }
 
-    public static void setUpTeamLevels(Team team) {
+    public void setUpTeamLevels(Team team) {
         currentForgeLevel.put(team, 1);
         currentProtectionLevel.put(team, 0);
         currentSharpnessLevel.put(team, 0);
