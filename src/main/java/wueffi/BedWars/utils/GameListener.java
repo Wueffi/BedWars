@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scheduler.BukkitTask;
+import wueffi.BedWars.BedWarsMain;
 import wueffi.BedWars.generic.checkWins;
 import wueffi.MiniGameCore.api.GameStartEvent;
 import wueffi.MiniGameCore.api.GameOverEvent;
@@ -146,6 +147,8 @@ public class GameListener implements Listener {
             }, 201L);
 
             startupTasks.put(lobby, st);
+
+            ((BedWarsMain) plugin).incrementGamesPlayed();
         }
     }
 

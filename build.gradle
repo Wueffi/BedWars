@@ -1,10 +1,11 @@
 plugins {
+    id("com.gradleup.shadow") version "9.3.1"
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 group = 'wueffi'
-version = '1.0'
+version = '1.0.2'
 
 repositories {
     mavenCentral()
@@ -16,6 +17,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.bstats:bstats-bukkit:3.2.1")
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     implementation 'com.github.Wueffi:MiniGameCore:master-SNAPSHOT'
 }
@@ -27,6 +29,15 @@ tasks {
         // Your plugin's jar (or shadowJar if present) will be used automatically.
         minecraftVersion("1.21")
     }
+}
+
+tasks.shadowJar {
+    configurations = [project.configurations.runtimeClasspath]
+
+    dependencies {
+        exclude { it.moduleGroup != "org.bstats" }
+    }
+    relocate("org.bstats", project.group.toString())
 }
 
 def targetJavaVersion = 21

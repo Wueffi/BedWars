@@ -1,4 +1,4 @@
-![Static Badge](https://img.shields.io/badge/Version-1.0_SNAPSHOT-blue)
+![Static Badge](https://img.shields.io/badge/Version-1.0.2-blue)
 # BedWars
 
 **BedWars** is a plugin for you to play BedWars using MiniGameCore and it's API!

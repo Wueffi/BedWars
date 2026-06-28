@@ -1,5 +1,5 @@
 name: BedWars
-version: '1.0'
+version: '1.0.2'
 main: wueffi.BedWars.BedWarsMain
 api-version: '1.21'
 authors: [ "Waffle [Wueffi]" ]
