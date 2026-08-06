@@ -9,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scheduler.BukkitTask;
-import wueffi.BedWars.BedWarsMain;
 import wueffi.BedWars.generic.checkWins;
 import wueffi.MiniGameCore.api.GameStartEvent;
 import wueffi.MiniGameCore.api.GameOverEvent;
@@ -77,8 +76,8 @@ public class GameListener implements Listener {
                 plugin.getLogger().warning("World was null for Lobby " + lobbyId + "(" + lobby.getWorldFolder().getName() + ")");
                 return;
             }
-            world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-            world.setGameRule(GameRule.DO_FIRE_TICK, false);
+            world.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
+            world.setGameRule(GameRules.FIRE_DAMAGE, false);
 
             BlockListener bl = new BlockListener(world, lobby);
             blockListeners.put(lobby, bl);
@@ -147,8 +146,6 @@ public class GameListener implements Listener {
             }, 201L);
 
             startupTasks.put(lobby, st);
-
-            ((BedWarsMain) plugin).incrementGamesPlayed();
         }
     }
 
