@@ -66,6 +66,7 @@ public class SpecialItemsListener implements Listener {
             eggThrow(event);
             return;
         }
+
         if (item.getType() != Material.FIRE_CHARGE) {
             return;
         }
@@ -73,29 +74,28 @@ public class SpecialItemsListener implements Listener {
         UUID playerId = player.getUniqueId();
         long currentTime = System.currentTimeMillis();
 
-        Long lastUse = cooldowns.putIfAbsent(playerId, currentTime);
-        if (lastUse != null) {
-            long timeSinceLastUse = currentTime - lastUse;
-            if (timeSinceLastUse < 200) {
-                return;
-            }
-            cooldowns.put(playerId, currentTime);
+        Long lastUse = cooldowns.get(playerId);
+        if (lastUse != null && currentTime - lastUse < 1000) {
+            return;
         }
+        cooldowns.put(playerId, currentTime);
 
-        event.setCancelled(true);
         if (item.getAmount() > 1) {
             item.setAmount(item.getAmount() - 1);
         } else {
             player.getInventory().setItemInMainHand(null);
         }
 
-        Vector direction = player.getEyeLocation().getDirection().normalize();
-        Location spawnLocation = player.getEyeLocation().add(direction.multiply(1.5));
 
-        Fireball fireball = (Fireball) player.getWorld().spawnEntity(spawnLocation, EntityType.FIREBALL);
-        fireball.setDirection(direction.multiply(15));
-        fireball.setYield(4.0f);
+        Location eyeLocation = player.getEyeLocation();
+        Vector direction = eyeLocation.getDirection().normalize();
+
+        Location spawnLocation = eyeLocation.clone().add(direction.clone().multiply(1.5));
+        Fireball fireball = player.getWorld().spawn(spawnLocation, Fireball.class);
+
         fireball.setShooter(player);
+        fireball.setYield(4.0f);
+        fireball.setDirection(direction);
     }
 
     @EventHandler
